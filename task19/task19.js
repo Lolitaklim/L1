@@ -1,118 +1,163 @@
 
+// localStorage.clear();
+
+// максимальный обьем хранилища
+const fillLocalStorageToMax = (function() {
+    let keyIndex = 0;
+    while (true) {
+        let key = 'key' + keyIndex;
+        let value = 'kZRlFrw7pdVlLCtusyV1XnlMHsypaaQ2QDiiclUljHoqOKzc9yG68Hnb8WTxE3kKr6u3RuGyxfJcQ5zqx4PWj3NRyya43DExFk62kB4PDV8ORe74dAE6u5t1ibVADJD3buhe87Isxm2dvuN8Qt4Ied9PoSOFlRO3zOwsQMNgQlNC6vrOv5KeieC82Wi70yHAXNykDxNmNzDF2rskrWnHVBBOKMAPxUCB4MYzeXlZnnDaI2my9RcPZdduLfZZKSl7XYZmhXEuQJ3q7Bg8Tnv65XDM7o22HMTSI0lS0sncMiW5nq3Fk3bmjBUjWaoKhcMH0DuUeitY4RHM9A1Xk0SHUHtB4sawZZOe4OPrIU3CvYjiAj6Bcbu3QC6BLeQ1ny6xveIN7xdNsfDRa0DhPgcZ6en4HorgsVXZsnynXDTKB0HyFCvbPesllY9GutgVHSBKt59t82TSXZrCQP0hLiQEAdwAXkO5Hn5n9Dt59b82264K9AVlu6uah28UBb5galQtecN0iXSVSrv1AI6feZln0gd710sFxpaFzcE0blnrqyRWY7GTzzWLou2MMmd4TIeWcSj9XitQyGzGDfCJeTowyzgwMiNNioxSN4NdMsq4WlXRvtmXTkH4QApJ5nd6W7XBy63VNljhwZsUg1tHv8HHQBqmxG2Oz5qGVoUOr4KCvjATrzEXqmrsFZj0gh01li0bMUP4rCustFmlaXvyDkzVsPiP7Lx6UAXci7DUzy5QB9dJoJqYEcLZNgwCaE6S5pnUEz7OA0GUkginkxSKQg26cm7j6SrJOA4u5CTlscsPdQQZT66kjs1Qyh0PFBkHoYpj8z4xoLAwfQ8hgy0GZ6Hdp53gGuZZMOmzS5XVZgcvzS6kqGsdi1vP4JIwUGaw4wLSatlwRRls70JpJpX4w3tiAKRzxCkkX6nxQ5L4KSpKkAqICPcy49KxIrdXnl2zHPRZaM2x5XJ1sxF8gNDSWedZ6b1qYKd1ZRuWtPmqWBYpkhaJc2QdUoUCbH41CTpRkbjT';
+        try {
+            window.localStorage.setItem(key, value);
+        } catch (e) {
+            break;
+        }
+        keyIndex++;
+    }
+    const size = calculateLocalStorageSize();
+   
+    const keysToRemove = [];
+    for (let key of Object.keys(localStorage)) {
+        if (key.startsWith('key')) {
+            keysToRemove.push(key);
+        }
+    }
+    for (let key of keysToRemove) {
+        localStorage.removeItem(key);
+    }
+
+    return size;
+})();
+
+// сколько занято в хранилище
+function calculateLocalStorageSize() {
+    let totalSize = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const itemSize = (key.length + value.length) * 2;
+      totalSize += itemSize;
+    }
+    return parseInt(totalSize / 1024);
+ }
+
+//   console.log(calculateLocalStorageSize(), fillLocalStorageToMax)
+
 
 const apiUrl = 'https://api.vk.com/method/wall.get?v=5.199';
-const ownerId = -92876084; // Ваш идентификатор владельца стены
+const ownerId = -92876084; 
 const accessToken = 'vk1.a.Tg4HWAUkCj8GyEvQnq_LTKbMMMjp0_Er89he6xMnMrg2xHUsF-xcDXWeaCjkgZHni76kKUBRQZeiOE8hRqWS5PD4AWoOr4hg5PndkTpfiQW6HLkE_ZNM_PZDlDYetHH_BVYodn7WDzd2OWtypoHc_jzOK-TEqvfjuGhMcUxM2Qy78qgVB80E7eWlo-lf9iCW0TmEjisgmOJc56pwHP4hmA';
-const count = 20;
-const offset = 1;
+let count = 10;
+let offset = 1;
+let callbackCount = 0;
+let isFetching = false; 
 
-// Генерируем уникальное имя для обратного вызова (callback)
-const callbackName = 'jsonpCallback' + Math.round(100000 * Math.random());
+// получение данных из localStorage
+let storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
 
-// Создаем скрипт для выполнения JSONP-запроса
-const script = document.createElement('script');
-script.src = `${apiUrl}&owner_id=${ownerId}&access_token=${accessToken}&offset=${offset}&count=${count}&v=5.199&callback=${callbackName}`;
-document.head.appendChild(script);
+
+function fetchPosts() {
+
+    if (isFetching) {
+        return;
+    }
+
+    isFetching = true; 
+
+    const script = document.createElement('script');
+    const currentCallback = `jsonpCallback${callbackCount}`;
+    script.src = `${apiUrl}&owner_id=${ownerId}&access_token=${accessToken}&offset=${offset}&count=${count}&v=5.199&callback=${currentCallback}`;
+    document.head.appendChild(script);
+    callbackCount++;
+
+    window[currentCallback] = function (data) {
+
+        const posts = data.response.items;
+
+          // добавление новых постов в начало массива 
+          storedPosts = [...posts, ...storedPosts];
+        
+        appendPostsToWidget(posts);
+
+        // сохранение данных в localStorage
+        localStorage.setItem('posts', JSON.stringify(storedPosts));
+        console.log(calculateLocalStorageSize(), fillLocalStorageToMax)
+
+        offset += count;
+        delete window[currentCallback]; 
+        document.head.removeChild(script);
+        isFetching = false; 
+    };
+
+    script.onerror = function () {
+        console.error('JSONP request failed');
+        delete window[currentCallback];
+        document.head.removeChild(script);
+        isFetching = false; 
+    };
+}
 
 const postsWidget = document.getElementById('posts-widget');
 const postList = document.getElementById('post-list');
 
-// Глобальная функция, которая будет вызвана после выполнения запроса
-window[callbackName] = function (data) {
+function appendPostsToWidget(posts) {
  
-    // id:471918
-    const posts = data.response.items;
-    const totalCount = data.response.count;
-    // console.log(totalCount)
-    console.log(data)
+     posts.forEach(post => {
+         const listItem = document.createElement('li');
+         listItem.classList.add('post');
 
-    posts.forEach(post => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('post');
-
-        const date = new Date(post.date * 1000); // Умножаем на 1000, так как Date принимает миллисекунды
-        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-        const dateItem = document.createElement('span');
-        dateItem.classList.add('date');
-        listItem.appendChild(dateItem);
-        dateItem.textContent = formattedDate;
-
-        const textItem = document.createElement('span');
-        textItem.classList.add('text');
-        listItem.appendChild(textItem);
-        textItem.textContent = post.text;        
-
-        if (post.attachments.length > 0) {
-            const sizes = post.attachments[0].photo.sizes;
-
-            // Проверяем, что в массиве sizes есть хотя бы один элемент
-            if (sizes.length > 0) {
-                // Получаем последний элемент из массива sizes
+        //  console.log(post.id);
+ 
+         const date = new Date(post.date * 1000); 
+         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+         const dateItem = document.createElement('span');
+         dateItem.classList.add('date');
+         listItem.appendChild(dateItem);
+         dateItem.textContent = formattedDate;
+ 
+         const textItem = document.createElement('span');
+         textItem.classList.add('text');
+         listItem.appendChild(textItem);
+         textItem.textContent = post.text;        
+ 
+        if (post.attachments && post.attachments.length > 0) {
+            const photoAttachment = post.attachments[0].photo;
+        
+            if (photoAttachment && photoAttachment.sizes && photoAttachment.sizes.length > 0) {
+                const sizes = photoAttachment.sizes;
+        
                 const lastSize = sizes[sizes.length - 1];
-
-                // Используем URL последнего элемента
                 const image = lastSize.url;
-
-                // Создаем элемент img и добавляем его в список
+        
                 const imgElement = document.createElement('img');
                 imgElement.src = image;
                 listItem.appendChild(imgElement);
             }
         }
+         postList.appendChild(listItem);
+     });
+    
+}
 
-        postList.appendChild(listItem);
-    });
-
-
-    delete window[callbackName]; // Удаляем созданную функцию обратного вызова
-};
-
-// Отлавливаем ошибки при выполнении запроса
-script.onerror = function () {
-    console.error('JSONP request failed');
-};
-
-// Удаляем скрипт из DOM после выполнения запроса
-script.onload = function () {
-    document.head.removeChild(script);
-};
+// первоначальная загрузка данных из localStorage при открытии страницы
+window.addEventListener('load', function () {
+    if (storedPosts.length > 0) {
+        appendPostsToWidget(storedPosts);
+    }
+});
 
 
+postsWidget.addEventListener('scroll', function () {
+    const scrollTop = postsWidget.scrollTop;
+    const scrollHeight = postsWidget.scrollHeight;
+    const clientHeight = postsWidget.clientHeight;
 
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+        fetchPosts();
+    }
+});
 
-
-
-
-    // 
-    //             const posts = data.items;
-    //             const totalCount = data.count;
-
-    //             posts.forEach(post => {
-    //                 const listItem = document.createElement('li');
-    //                 listItem.classList.add('post');
-    //                 listItem.textContent = post.text;
-    //                 postList.appendChild(listItem);
-    //             });
-
-    //             offset += count;
-
-    //             // Если все посты загружены, отключаем обработчик прокрутки
-    //             if (offset >= totalCount) {
-    //                 postsWidget.removeEventListener('scroll', handleScroll);
-    //             }
-    //      
-
-    // function handleScroll() {
-    //     if (postsWidget.scrollTop + postsWidget.clientHeight >= postsWidget.scrollHeight) {
-    //         
-    //     }
-    // }
-
-    // // Добавляем обработчик прокрутки
-    // postsWidget.addEventListener('scroll', handleScroll);
-
-    // // Начальная загрузка постов
- 
+fetchPosts();
 
 
 
