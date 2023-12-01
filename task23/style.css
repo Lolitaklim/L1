@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 100px;
+}
+
+#password-input {
+    margin-bottom: 10px;
+}
+
+#password-strength {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#improvement-suggestions {
+    margin-top: 10px;
+    color: #555;
+}

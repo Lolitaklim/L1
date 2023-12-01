@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="container">
+        <div class="pagination">
+            <button onclick="prevPage()">Prev</button>
+            <span id="currentPage">1</span>
+            <button onclick="nextPage()">Next</button>
+        </div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('fname')">First Name</th>
+                    <th onclick="sortTable('lname')">Last Name</th>
+                    <th onclick="sortTable('tel')">Telephone</th>
+                    <th onclick="sortTable('address')">Address</th>
+                    <th onclick="sortTable('city')">City</th>
+                    <th onclick="sortTable('state')">State</th>
+                    <th onclick="sortTable('zip')">ZIP</th>
+                </tr>
+            </thead>
+            <tbody id="dataBody"></tbody>
+        </table>
+    </div>
+    <script src="task24.js"></script>
+</body>
+</html>
