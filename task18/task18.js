@@ -30,15 +30,15 @@ const fillLocalStorageToMax = function() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-// получаем результат
-const dataSize = fillLocalStorageToMax();
+    // получаем результат
+    const dataSize = fillLocalStorageToMax();
 
-const dataSizeInKB = (dataSize / 1024).toFixed(6);
-const dataSizeInMB = (dataSize / (1024 * 1024)).toFixed(6);
+    const dataSizeInKB = (dataSize / 1024).toFixed(6);
+    const dataSizeInMB = (dataSize / (1024 * 1024)).toFixed(6);
 
-const maxSizeSpan = document.getElementById('maxSize');
+    const maxSizeSpan = document.getElementById('maxSize');
 
-maxSizeSpan.textContent = dataSize + ' байт, ' + dataSizeInKB + ' KB, ' + dataSizeInMB + ' MB';
+    maxSizeSpan.textContent = dataSize + ' байт, ' + dataSizeInKB + ' KB, ' + dataSizeInMB + ' MB';
 
 
 });

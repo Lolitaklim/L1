@@ -1,7 +1,22 @@
+// 19 Реализовать виджет, отображающий список постов из любого паблика в VK 
+// (подойдет любой паблик, где постов очень много). Например, с помощью этой функции API VK. 
+// Виджет должен иметь фиксированные размеры и возможность прокрутки. 
+// При прокрутке содержимого виджета до конца должны подгружаться новые посты. 
+// Необходимо реализовать возможность кэширования уже загруженных данных: 
+// если пользователь закрыл страницу, а потом снова открыл ее, 
+// виджет должен отображать все загруженные ранее данные 
+// (новые данные должны подгружаться из учетом уже загруженных ранее).
+// При переполнении localStorage, данные, загруженные последними должны вытеснять данные 
+// загруженные первыми.
+
+// 20 Реализовать функцию подсчета объема памяти занимаемого данными в LocalStorage 
+// для предыдущей задачи. При изменении данных в localStorage в консоль должен выводиться 
+// объем занятой памяти / максимальный размер 	хранилища. 
+
 
 // localStorage.clear();
 
-// максимальный обьем хранилища
+// максимальный объем хранилища из 19task
 const fillLocalStorageToMax = (function() {
     let keyIndex = 0;
     while (true) {
@@ -39,9 +54,7 @@ function calculateLocalStorageSize() {
       totalSize += itemSize;
     }
     return parseInt(totalSize / 1024);
- }
-
-//   console.log(calculateLocalStorageSize(), fillLocalStorageToMax)
+}
 
 
 const apiUrl = 'https://api.vk.com/method/wall.get?v=5.199';
@@ -102,23 +115,21 @@ const postList = document.getElementById('post-list');
 
 function appendPostsToWidget(posts) {
  
-     posts.forEach(post => {
-         const listItem = document.createElement('li');
-         listItem.classList.add('post');
+    posts.forEach(post => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('post');
 
-        //  console.log(post.id);
- 
-         const date = new Date(post.date * 1000); 
-         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-         const dateItem = document.createElement('span');
-         dateItem.classList.add('date');
-         listItem.appendChild(dateItem);
-         dateItem.textContent = formattedDate;
- 
-         const textItem = document.createElement('span');
-         textItem.classList.add('text');
-         listItem.appendChild(textItem);
-         textItem.textContent = post.text;        
+        const date = new Date(post.date * 1000); 
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        const dateItem = document.createElement('span');
+        dateItem.classList.add('date');
+        listItem.appendChild(dateItem);
+        dateItem.textContent = formattedDate;
+
+        const textItem = document.createElement('span');
+        textItem.classList.add('text');
+        listItem.appendChild(textItem);
+        textItem.textContent = post.text;        
  
         if (post.attachments && post.attachments.length > 0) {
             const photoAttachment = post.attachments[0].photo;
