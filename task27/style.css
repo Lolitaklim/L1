@@ -5,6 +5,7 @@
     justify-content: center;
     align-items: center;
     background-color: rgb(183, 66, 246);
+    border-radius: 15px;
     position: relative;
     transition: all 1s ease;
 }

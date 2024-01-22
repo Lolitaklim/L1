@@ -6,24 +6,24 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     
-</head>
+</head> 
 <body>
     <div class="container">
         <div class="pagination">
-            <button onclick="prevPage()">Prev</button>
+            <button onclick="prevPage()"><</button>
             <span id="currentPage">1</span>
-            <button onclick="nextPage()">Next</button>
+            <button onclick="nextPage()">></button>
         </div>
         <table id="dataTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable('fname')">First Name</th>
-                    <th onclick="sortTable('lname')">Last Name</th>
-                    <th onclick="sortTable('tel')">Telephone</th>
-                    <th onclick="sortTable('address')">Address</th>
-                    <th onclick="sortTable('city')">City</th>
-                    <th onclick="sortTable('state')">State</th>
-                    <th onclick="sortTable('zip')">ZIP</th>
+                    <th onclick="sortColumn('fname')">First Name</th>
+                    <th onclick="sortColumn('lname')">Last Name</th>
+                    <th onclick="sortColumn('tel')">Telephone</th>
+                    <th onclick="sortColumn('address')">Address</th>
+                    <th onclick="sortColumn('city')">City</th>
+                    <th onclick="sortColumn('state')">State</th>
+                    <th onclick="sortColumn('zip')">ZIP</th>
                 </tr>
             </thead>
             <tbody id="dataBody"></tbody>

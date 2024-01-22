@@ -8,27 +8,34 @@ body {
     width: 80%;
     margin: auto;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
     margin-top: 20px;
+	margin-bottom: 20px;
+	border: 15px solid #bad6f6;
+	border-top: 5px solid  #bad6f6;
+	border-collapse: collapse;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
+ th {
+	font-weight: bold;
+	padding: 5px;
+	background:  #bad6f6;
+	border: none;
+	border-bottom: 5px solid  #bad6f6;
     cursor: pointer;
-    background-color: #f2f2f2;
+}
+ td {
+	padding: 5px;
+	border: none;
+	border-bottom: 5px solid  #bad6f6;
 }
 
 th:hover {
-    background-color: #ddd;
+    background-color:  #a1c4ed;
 }
 
 .pagination {
@@ -37,16 +44,17 @@ th:hover {
 }
 
 .pagination button {
-    background-color: #4CAF50;
+    background-color: #4f86c8;
     color: white;
-    border: 1px solid #4CAF50;
+    border: none;
+    border-radius: 3px;
     padding: 8px 16px;
     margin: 0 5px;
     cursor: pointer;
 }
 
 .pagination button:hover {
-    background-color: #45a049;
+    background-color: #22538e;
 }
 
 .pagination span {
@@ -62,4 +70,4 @@ th.asc::after {
 th.desc::after {
     content: '\25BC'; /* код символа для стрелки вниз */
     float: right;
-}
+} 

@@ -159,16 +159,3 @@ postsWidget.addEventListener('scroll', function () {
 
 fetchPosts();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
