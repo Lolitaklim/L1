@@ -1,25 +1,24 @@
-// Разработайте функцию преобразования JSON в связный список.
-// На входе функция должна получать JSON, содержащий список объектов,
-// на выходе объект, представляющий из себя односвязный список.
-  
+// Решение 1, использование классов js для узла списка, создание первого узла и цикл for
+
 // определение структуры узла связанного списка
 class ListNode {
+    // конструктор класса создает узел списка
     constructor(value) {
-    //хранение данных
-    this.value = value;
-    // указатель на следующий узел
-    this.next = null;
+        // значение узла
+        this.value = value;
+        // указатель на следующий узел
+        this.next = null;
     }
 }
   
 function jsonToLinkedList(jsonArray) {
-    // проверка наличия входных данных
-    if (!jsonArray || jsonArray.length === 0) {
-        // если не существует или пуст - null
+    // проверка входных данных, массив, не пустой, каждый элемент объект
+    // every возвращает true, если для всех элементов массива переданная функция вернет true
+    if (!Array.isArray(jsonArray) || jsonArray.length === 0 || !jsonArray.every(item => typeof item === 'object')) {
         return null;
     }
 
-    // cоздание первого узла списка
+    // создание первого узла списка
     const head = new ListNode(jsonArray[0]);
     // инициализация переменной, указывающей на текущий узел
     let current = head;
@@ -61,7 +60,7 @@ let linkedList = jsonToLinkedList(inputJson);
 console.log(linkedList);
  
 // обход значений в связанном списке
-// while (linkedList !== null) {
+// while (linkedList) {
 //     console.log(linkedList.value);
 //     linkedList = linkedList.next;
 // }

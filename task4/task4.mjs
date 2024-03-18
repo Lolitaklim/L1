@@ -1,8 +1,6 @@
-// Разработать функцию, изменяющую окончание слов в зависимости от падежа. Функцию надо упаковать в модуль.
-
 // принимаем число и слово в и.п. ед.ч., р.п. ед.ч. и р.п. мн.ч.
-function changingWordEndings(num, [nominativeSing,genitiveSing,genitivePlur]) {
-    // последняя цифрв числа
+export const changingWordEndings = (num, [nominativeSing,genitiveSing,genitivePlur]) => {
+    // последняя цифра числа
     const lastDigit = num % 10;
     // две последние цифры числа
     const lastTwoDigit = num % 100;
@@ -23,6 +21,6 @@ function changingWordEndings(num, [nominativeSing,genitiveSing,genitivePlur]) {
 
 // console.log(changingWordEndings(21, ['сообщение','сообщения','сообщений']));
 
-// подключен в test.js
-module.exports = changingWordEndings;
+
+
 
