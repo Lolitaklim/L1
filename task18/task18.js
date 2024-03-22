@@ -39,8 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const maxSizeSpan = document.getElementById('maxSize');
 
     maxSizeSpan.textContent = dataSize + ' байт, ' + dataSizeInKB + ' KB, ' + dataSizeInMB + ' MB';
-
-
 });
 
 
