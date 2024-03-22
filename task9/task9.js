@@ -1,8 +1,6 @@
-// Реализовать функцию конвертации JSON в строку
-
 function customStringify(data) {
 
-    // eсли входные данные массив
+    // если входные данные массив
     if (Array.isArray(data)) {
         // преобразуем каждый элемент массива и объединяем их с запятыми
         const arrayStr = data.map(item => customStringify(item)).join(',');
@@ -29,9 +27,8 @@ function customStringify(data) {
     .join(',');
     // Заключаем результат в фигурные скобки и возвращаем
     return `{${objectStr}}`;
-  }
+}
   
-
 const data = {
     name: "John",
     age: 30,
@@ -40,11 +37,11 @@ const data = {
     hobbies: ["reading", "coding"]
 };
 
-const jsonStringdata = customStringify(data);
-console.log(jsonStringdata);
+const jsonStringData = customStringify(data);
+console.log(jsonStringData);
 
-const jsonStringdata2 = JSON.stringify(data);
-console.log(jsonStringdata2);
+const jsonStringData2 = JSON.stringify(data);
+console.log(jsonStringData2);
 
 const array = [1, 'foo', { key: 'value' }];
 
