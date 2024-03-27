@@ -2,16 +2,16 @@
 const apiKey = '05bc5aab-25f4-43fe-b939-d1425c76c54f';
 
 // функция для отправки запроса на Яндекс карты
-function geocode(address, callback) {
+function geocode(inputValue, displayResults) {
     // URL для запроса
-    const apiUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&geocode=${encodeURIComponent(address)}&format=json`;
+    const apiUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&geocode=${encodeURIComponent(inputValue)}&format=json`;
 
     // отправка запроса
     fetch(apiUrl)
         .then(response => {
             // проверка успешности ответа
             if (!response.ok) {
-                throw new Error(`Failed address: ${address}`);
+                throw new Error(`Failed address: ${inputValue}`);
             }
             // преобразование ответа в JSON
             return response.json();
@@ -20,7 +20,7 @@ function geocode(address, callback) {
             // извлечение информации из JSON-ответа
             const results = data.response.GeoObjectCollection.featureMember.map(item => item.GeoObject.name);
             // вызов колбэка с результатами
-            callback(results);
+            displayResults(results);
         })
         .catch(error => {
             // обработка ошибок
@@ -29,11 +29,11 @@ function geocode(address, callback) {
 }
 
 // функция для создания замыкания с дебаунсингом и троттлингом
-function debounce(fn, delay) {
+function debounce(geocode, delay) {
     // идентификатор таймера
     let timeoutId;
 
-    return function (...args) {
+    return function (inputValue, displayResults) {
         // если таймер уже установлен, сбрасываем его
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -42,7 +42,7 @@ function debounce(fn, delay) {
         // устанавливаем новый таймер для вызова функции с задержкой
         timeoutId = setTimeout(() => {
             // вызов оригинальной функции с переданными аргументами
-            fn(...args);
+            geocode(inputValue, displayResults);
             // сброс идентификатора таймера
             timeoutId = null;
         }, delay);

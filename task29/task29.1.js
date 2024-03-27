@@ -1,20 +1,21 @@
-// Задача: Взаимодействие с формами: 
-// Напишите функцию, которая получает данные из формы на веб-странице
-// и выполняет определенные действия с этими данными, 
-// например, отправляет их на сервер 
-// или отображает всплывающее окно с результатами.
+//  Решение 1, привязывание функции к событию щелчка кнопки, получение данных через getElement
 
 function submitForm() {
     // получаем данные из формы
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
 
+    if (!name || !email) {
+        alert('Заполните все поля');
+        return;
+    }
+
     // выводим данные в консоль
     console.log('Имя:', name);
     console.log('Email:', email);
 
    // отправляем данные на сервер
-   fetch('https://eo7difimj6z2ziv.m.pipedream.net', {
+   fetch('https://jsonplaceholder.typicode.com/posts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

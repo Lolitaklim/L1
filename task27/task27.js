@@ -1,10 +1,4 @@
-// Задача: Добавить анимацию для элемента: 
-// Напишите функцию, которая добавляет анимацию для элемента на веб-странице, 
-// например, плавное изменение его положения или размера.
-
-function addAnimationToElement(elementId) {
-    const element = document.getElementById(elementId);
-
+function addAnimationToElement(element) {
     // вращение и увеличение размера при наведении мыши
     element.addEventListener('mouseover', function() {
         element.style.transform = 'rotate(360deg) scale(1.5)';
@@ -17,5 +11,7 @@ function addAnimationToElement(elementId) {
     });
 }
 
-addAnimationToElement('element');
+const element = document.getElementById('element');
+
+addAnimationToElement(element);
   

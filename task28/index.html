@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
+    <link rel="stylesheet" href="style.css">
+</head> 
 <body>
-    <template id="template">
-        <div>
-            <h2>Шаблон</h2>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Expedita eos possimus explicabo a aliquid repudiandae at beatae impedit? Ullam veniam provident neque sapiente! Autem, debitis consequuntur error hic eveniet est.</p>
+    <!-- шаблон карточки товара -->
+    <template id="product-card-template">
+        <div class="product-card">
+            <h3 class="product-title"></h2>
+            <p class="product-description"></p>
+            <span class="product-price"></span>
+            <button class="add-to-cart-btn">Купить</button>
         </div>
     </template>
-    <script src="task28.js"></script>
+
+    <!-- контейнер, куда будут добавлены карточки товаров -->
+    <div id="product-container"></div>
+
+<script src="task28.1.js"></script>
+<script src="task28.2.js"></script>
 </body>
 </html>
