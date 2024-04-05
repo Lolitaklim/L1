@@ -1,5 +1,5 @@
 // Решение 2, точность до 1 мегабайта
-localStorage.clear();
+localStorage.clear(); 
 
 function numWithZeros(number) {
     // приводим число к строковому типу
