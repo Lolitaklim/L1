@@ -48,4 +48,10 @@
 // если равен, то добавляем те что до него в хранилище в начало
 // встретили одинаковый айди, залепили после него данные из стораджа
 // если сторадж полный опять удаляем последние 10 постов
-// но если перезагрузить еще разок не дойдя до одинаковых айди, теряем и смещение и посты
+
+для показательного айдишники и даты 
+console.log("Downloaded:",posts[i].id, formatDateFromMs(posts[i].date), "Local:", storedPosts[storedPosts.length - 1].id, formatDateFromMs(storedPosts[storedPosts.length - 1].date));
+console.log('нашлось сравнение');
+console.log('пустой массив');
+console.log('не пусто');
+console.log('не пустой массив');

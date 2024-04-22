@@ -11,16 +11,21 @@ let count = 10;
 // смещение (не берем первй пост закрепленный)
 let offset = 1;
 
-
 let callbackCount = 0;
+
+// данные из хранилища
 let storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
 
+// идет загрузка постов
 let isFetching = false;
 
+// идет первоначальная загрузка
 let isInitial = false;
 
 function jsonpRequest (currentCallback, script) {
+    // возвращаем Promise, который будет разрешен при успешной загрузке данных
     return new Promise((resolve, reject) => {
+        // функция, которая вызывается при получении данных
         window[currentCallback] = function (data) {
             resolve(data);
             delete window[currentCallback];
@@ -34,9 +39,12 @@ function jsonpRequest (currentCallback, script) {
 
 // получаем посты
 async function fetchPosts() {
-
+    // создаем скрипт для получения данных (протокол JSONP)
+    // удалённый сервер должен в ответ сгенерировать скрипт, который вызывает currentCallback() с данными, которые хочет передать.
     const script = document.createElement('script');
+    // имя нашей функции – в URL-параметре callback
     const currentCallback = `jsonpCallback${callbackCount}`;
+    // добавляем скрипт в head
     script.src = `${apiUrl}&owner_id=${ownerId}&access_token=${accessToken}&offset=${offset}&count=${count}&v=5.199&callback=${currentCallback}`;
 
     // добавляем скрипт в head
@@ -53,27 +61,23 @@ async function fetchPosts() {
     return data.response.items.sort((a, b) => a.date - b.date);
 }
 
+// обычная загрузка постов
 async function downloadPosts() {
     const posts = await fetchPosts(); 
 
-    // // увеличение смещения
-    // offset += count;
-
-
-    // добавление новых постов в конец массива 
+    // помещаем в массив постов 
     storedPosts = [...storedPosts, ...posts];
-    
-
+    // добавляем в виджет
     appendPostsToWidget(posts);
+    // сохраняем
     savePostsToLocalStorage(storedPosts);
-    // увеличение смещения
-    offset += count;
-
+    // увеличиваем смещение
+    offset += count; 
     isFetching = false;
 }
 
 function formatDateFromMs(ms) {
-    let date = new Date(ms * 1000)
+    const date = new Date(ms * 1000)
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-\
 ${date.getDate().toString().padStart(2, '0')} \
 ${date.getHours().toString().padStart(2, '0')}:\
@@ -83,88 +87,64 @@ ${date.getSeconds().toString().padStart(2, '0')}`
 
 // первоначальная загрузка постов из учета localStorage
 async function initialDownload() {
-
     const posts = await fetchPosts();
 
-    // storedPosts.sort((a, b) => a.date - b.date);
-
-    // storedPosts.forEach((post, index) => {
-    //     console.log(formatDateFromMs(post.date), index);
-
-    // })
-
-    console.log(posts);
-
+    // идем по подгруженным постам с конца, там посты новее
     for (let i = posts.length - 1; i > 0; i--) {
-        
-    
-    // posts.forEach((post, index) => { 
-
-        console.log("Downloaded:",posts[i].id, formatDateFromMs(posts[i].date), "Local:", storedPosts[storedPosts.length - 1].id, formatDateFromMs(storedPosts[storedPosts.length - 1].date));
-
-       
+        // если нашелся пост который равен последнему(новейшему) из хранилища
         if (posts[i].id === storedPosts[storedPosts.length - 1].id) {
-            console.log('нашлось сравнение');
+            // обрезаем массив по найденный пост, не включая его
+            posts.splice(0, i + 1);
 
-            if(!posts) {
+            // если массив получился пустой добавляем посты в виджет, смещение - длина массива с постами + закрепленный
+            if(posts.length === 0) {
                 appendPostsToWidget(storedPosts);
-                offset = storedPosts.lenght + 1;
-
+                offset = storedPosts.length + 1;
                 isInitial = false;
-
+                isFetching = false;
                 return;
             } 
-            // удаляем все оставшееся вкл индекс
-            posts.splice(i);
-            // isInitial = false;
-            console.log(posts);
 
-            if(!posts) return;
+            // добавляем подгруженные посты в виджет, увеличиваем смещение, добавляем остальные посты
             appendPostsToWidget(posts);
-            offset += posts.lenght;
+            offset += posts.length;
             appendPostsToWidget(storedPosts);
 
+            // сохраняем посты, смещение - длина массива с постами + закрепленный
             storedPosts = [...posts, ...storedPosts];
-
-            offset = storedPosts.lenght + 1;
-        //     storedPosts.splice(offset, 0, ...posts);
-
-        //     appendPostsToWidget(storedPosts);// доб v nachalo!
+            offset = storedPosts.length + 1;
             savePostsToLocalStorage(storedPosts);
             isInitial = false;
             isFetching = false;
-        //     offset = storedPosts.length + 1;
-        //     isInitial = false;
             return;
         }
-    
-    // })
-
     }
 
-    storedPosts = [...posts, ...storedPosts]; // posle offsetnstored posts stored
-   
-   
-    appendPostsToWidget(posts);// доб v nachalo!
-    console.log('нашлось');
-
-    // savePostsToLocalStorage(storedPosts);
-   
-    offset += count;
-
-    
+    // если не нашелся пост который равен последнему(новейшему) из хранилища, сохраняем, добавляем смещение
+    storedPosts = [...posts, ...storedPosts];
+    appendPostsToWidget(posts);
+    savePostsToLocalStorage(storedPosts);
+    offset += count;    
     isFetching = false;
 }
 
 // функция для сохранения постов в localStorage
 function savePostsToLocalStorage(storedPosts) {    
     try {
+        // сортируем от старых к новым
         storedPosts.sort((a, b) => a.date - b.date);
         localStorage.setItem('posts', JSON.stringify(storedPosts));
         console.log(`${(calculateLocalStorageSize() / (1024 * 1024)).toFixed(6)} MB / ${fillLocalStorageToMax} MB`);
     } catch (e) {
-        // если произошла ошибка, удаляем первые count постов
-        storedPosts.splice(0, count);
+        // при ошибке обрезаем массив постов, 
+        // если обычная загрузка, удаляем посты загруженные первыми
+        // если первоначальная загрузка, удаляем самые старые посты
+        if(!isInitial) {
+            storedPosts.splice(0, count + 1);
+        } else {
+            storedPosts.splice(-count);
+        }
+        // повторяем
         savePostsToLocalStorage(storedPosts);
     }
 }
@@ -174,27 +154,34 @@ const postList = document.getElementById('post-list');
 
 // добавление постов в виджет
 function appendPostsToWidget(posts) {
-
+    // проходимся по каждому посту
     posts.forEach(post => {
+        // создаем элемент списка
         const listItem = document.createElement('li');
         listItem.classList.add('post');
-
-        const date = new Date(post.date * 1000); 
-        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+ 
+        // создаем элементы для отображения даты
+        const formattedDate = formatDateFromMs(post.date);
         const dateItem = document.createElement('span');
         dateItem.classList.add('date');
         listItem.appendChild(dateItem);
         dateItem.textContent = formattedDate;
 
+        // создаем элемент для отображения текста поста
         const textItem = document.createElement('span');
         textItem.classList.add('text');
         listItem.appendChild(textItem);
-        textItem.textContent = post.text;        
+        textItem.textContent = post.text;
+        
+        // если есть вложения и длина вложений больше 0 получаем фото
         if (post.attachments && post.attachments.length > 0) {
             const photoAttachment = post.attachments[0].photo;
+            // если есть фото и размеры фото
             if (photoAttachment && photoAttachment.sizes && photoAttachment.sizes.length > 0) {
+                // получаем размеры фото, последний размер фото, url фото
                 const sizes = photoAttachment.sizes;
                 const image = sizes[sizes.length - 1].url;
+                // создаем элемент img
                 const imgElement = document.createElement('img');
                 imgElement.src = image;
                 listItem.appendChild(imgElement);
@@ -207,9 +194,10 @@ function appendPostsToWidget(posts) {
 }
 
 // первоначальная загрузка данных из localStorage при открытии страницы
-addEventListener('load', function () {
+addEventListener('load', () => {
+    isFetching = true;
+    // если массив из хранилища не пустой запускаем первоначальную загрузку
     if (storedPosts.length > 0) {
-        isFetching = true;
         isInitial = true;
         initialDownload();
     } else {
@@ -218,15 +206,15 @@ addEventListener('load', function () {
 });
 
 // обработка скролла
-postsWidget.addEventListener('scroll', function () {
+postsWidget.addEventListener('scroll', () => {
     const scrollTop = postsWidget.scrollTop;
     const scrollHeight = postsWidget.scrollHeight;
     const clientHeight = postsWidget.clientHeight;
 
     // если скролл внизу страницы (осталось 10 пикселей) - загружаем новые посты
     if (scrollTop + clientHeight >= scrollHeight - 10 && isFetching === false) {
-        isInitial ?  initialDownload() : downloadPosts();
         isFetching = true;
+        isInitial ?  initialDownload() : downloadPosts();
+        
     }
 });
-
